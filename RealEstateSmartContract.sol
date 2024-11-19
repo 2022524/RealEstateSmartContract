@@ -69,6 +69,21 @@ contract RealEstateSmartContract {
         emit OwnershipTransferred(propertyId, previousOwner, newOwner);
     }
 
+    // Function will get the remaining tokens for a property
+    function getTokensAvailable(uint propertyId) public view returns (uint) {
+        return properties[propertyId].tokensAvailable;
+    }
+
+    // Function will withdraw funds for owner
+    function withdrawFunds() public {
+        payable(mag.sender).transfer(address(this).balance);
+    }
+
+    // Function will get token balance of a specific address for a property
+    function getTokenBalance(uint256 propertyId, address tokenHolder) public view returns (uint256) {
+        return properties[propertyId].tokenHolders[tokenHolder];
+    }
+
 
 
 
