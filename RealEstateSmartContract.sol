@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+// Smart Contract for Real Estate Transactions
 contract RealEstateSmartContract {
     struct Property {
         uint id;
@@ -12,7 +13,8 @@ contract RealEstateSmartContract {
         mapping(address => uint) tokenHolders;
     }
 
-    uint public propertyCount = 0; // Counting property ID
+    // Counting property ID
+    uint public propertyCount = 0; 
     mapping(uint => Property) public properties;
 
     event PropertyListed(uint propertyId, string name, uint price, address owner);
@@ -55,4 +57,20 @@ contract RealEstateSmartContract {
         property.tokensAvailable -= tokens;
 
         emit TokensPurchased(propertyId, msg.sender, tokens);
+    }
+
+    // Function will allow for transfering ownership of property
+    function transferOwnership(uint256 propertyId, address newOwner) public onlyOwner(propertyId) {
+        require(newOwner != address(0), "New owner cannot be the 0 address");
+
+        address previousOwner = properties[propertyId].owner;
+        properties[propertyId].owner = newOwner;
+
+        emit OwnershipTransferred(propertyId, previousOwner, newOwner);
+    }
+
+
+
+
+
 }
