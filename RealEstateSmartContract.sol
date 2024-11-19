@@ -18,11 +18,12 @@ contract RealEstateSmartContract {
     mapping(uint => Property) public properties;
 
     event PropertyListed(uint propertyId, string name, uint price, address owner);
-    event TokenPurchased(uint propertyId, address buyer, uint tokens);
-    event Ownershiptransferred(uint propertyId, address previousOwner, address newOwner);
+    event TokensPurchased(uint propertyId, address buyer, uint tokens);
+    event OwnershipTransferred(uint propertyId, address previousOwner, address newOwner);
 
-    modifier onlyOwner(uint propertyId){
+    modifier onlyOwner(uint propertyId) {
         require(msg.sender == properties[propertyId].owner, "Not the property owner");
+        _;
     }
 
     // Function will create a new property listed
@@ -76,16 +77,11 @@ contract RealEstateSmartContract {
 
     // Function will withdraw funds for owner
     function withdrawFunds() public {
-        payable(mag.sender).transfer(address(this).balance);
+        payable(msg.sender).transfer(address(this).balance);
     }
 
     // Function will get token balance of a specific address for a property
     function getTokenBalance(uint256 propertyId, address tokenHolder) public view returns (uint256) {
         return properties[propertyId].tokenHolders[tokenHolder];
     }
-
-
-
-
-
 }
