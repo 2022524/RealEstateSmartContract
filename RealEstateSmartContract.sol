@@ -7,6 +7,8 @@ contract RealEstateSmartContract {
         string name;
         uint price; // REMINDER - Need to check payment in Wei*
         address owner;
+        uint totalTokens;
+        uint tokensAvailable;
         mapping(address => uint) tokenHolders;
     }
 
@@ -20,7 +22,7 @@ contract RealEstateSmartContract {
     modifier onlyOwner(uint propertyId){
         require(msg.sender == properties[propertyId].owner, "Not the property owner");
     }
-    
+
     // Function will create a new property listed
     function listProperty(string memory _name, uint _price, uint _totalTokens) public{
 
@@ -35,7 +37,22 @@ contract RealEstateSmartContract {
         newProperty.owner = msg.sender;
         newProperty.totalTokens = _totalTokens;
         newProperty.tokensAvailable = _totalTokens;
+
         emit PropertyListed(propertyCount, _name, _price, msg.sender);
     }
 
+    // Function will allow tokens to be purchased for fractional ownership
+    function purchaseTokens(uint propertyId, uint tokens) public payable {
+
+        Property storage property = properties[propertyId];
+
+        require(property.id > 0, "The Property does not exist");
+        require(tokens > 0, "You must purchase at least one token");
+        require(tokens <= property.tokensAvailable, "Not enough tokens available");
+        require(msg.value == (property.price * tokens) / property.totalTokens, "Incorrect payment amount");
+
+        property.tokenHolders[msg.sender] += tokens;
+        property.tokensAvailable -= tokens;
+
+        emit TokensPurchased(propertyId, msg.sender, tokens);
 }
